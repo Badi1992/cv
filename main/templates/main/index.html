@@ -1,0 +1,202 @@
+
+{% extends 'main/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}Home - My Portfolio{% endblock %}
+
+{% block extend_header %}{% endblock %}
+
+{% block content %}
+<section>
+	<div class="bannerSection">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-md-4">
+					<div class="bannerUserImg">
+						<img src="{{me.userprofile.avatar.url}}" alt="avatar" class="img-fluid">
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="bannerContent">
+						<h1 class="xlTitle">Hi, I’m {{me.first_name|title}},— a {{me.userprofile.title}}</h1>
+						<p>{{me.userprofile.bio}}</p>
+						<p>
+							<a download href="{{me.userprofile.cv.url}}" class="btn btnPrimary" download>{% trans "Download Resume" %}</a>
+							<a href="{% url 'main:contact' %}" class="btn btnOutline">{% trans "Contact" %}</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="sectionSpace">
+	<div class="container">
+		<h4 class="smText">Featured Work</h4>
+		<div class="row g-4">
+			{% for item in portfolio %}
+			<div class="col-md-4">
+				<div class="cardStyle1">
+						{% if item.image %}
+							<div class="portfolioImgCol"><img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid"></div>
+						{% else %}
+							<div class="portfolioImgCol"><img src="{% static 'css/images/project-img.png' %}" alt="{{ item.name }}" class="img-fluid"></div>
+						{% endif %}
+					<h5>{{ item.name }}</h5>
+					<p>{{ item.description|default:"No description"|truncatechars:140 }}</p>
+					<a href="{% url 'main:portfolio' item.slug %}">{% trans "View" %}</a>
+				</div>
+			</div>
+			{% empty %}
+			<div class="col-12">{% trans "No portfolio items yet." %}</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>
+
+<section class="sectionSpaceSm lightBg">
+	<div class="container">
+		<div class="row pb-3">
+			<div class="col">
+				<h4 class="smText regular">Certificates</h4>
+			</div>
+			<div class="col-auto">
+				<a href="javascript:void(0)" class="simpleLink">View all</a>
+			</div>
+		</div>
+		<div class="sliderOuter">
+			<div class="swiper certificatesSlider">
+				<div class="swiper-wrapper">
+					{% for cert in certificates %}
+						{% if cert.is_active %}
+							<div class="swiper-slide">
+								<div class="cardStyle1">
+									<h4 class="mdTitle cs1Title">
+										<a href="javascript:void(0)">{{ cert.title }}</a>
+									</h4>
+									<ul class="cardOptionCol">
+										{% if cert.date %}<li>{{ cert.date|date:"d M Y" }}</li>{% endif %}
+										<li>{{ cert.title }}</li>
+									</ul>
+									<p>{{ cert.description|default:"" }}</p>
+								</div>
+							</div>
+						{% endif %}
+					{% empty %}
+						<div class="swiper-slide">
+							<div class="cardStyle1">{% trans "No certificates yet." %}</div>
+						</div>
+					{% endfor %}
+				</div>
+				</div>
+			</div>
+			<div class="cert-swiper-button-next swiper-button-next swiperBtnStyle"></div>
+			<div class="cert-swiper-button-prev swiper-button-prev swiperBtnStyle"></div>
+			<div class="swiper-pagination swiperPaginationStyle posInitial"></div>
+		</div>
+	</div>
+</section>
+
+<section class="sectionSpace">
+	<div class="container">
+		<h4 class="smText">Recent blogs</h4>
+		<div class="row g-3">
+			{% for post in blogs %}
+			<div class="col-md-6">
+				<div class="cardStyle1">
+					<h5>{{ post.name }}</h5>
+					<p>{{ post.description|default:""|truncatechars:160 }}</p>
+					<a href="{% url 'main:blog' post.slug %}">{% trans "Read more" %}</a>
+				</div>
+			</div>
+			{% empty %}
+			<div class="col-12">{% trans "No blog posts yet." %}</div>
+			{% endfor %}
+		</div>
+	</div>
+</section>
+
+<section>
+	<div class="sectionSpace">
+		<div class="container">
+			<div class="testimonialCol">
+				<h4 class="smText regular d-block">Testimonials</h4>
+				<div class="testimonialSlider">
+					<div class="swiper testimonialSwiper">
+						<div class="swiper-wrapper">
+							{% for t in testimonials %}
+							<div class="swiper-slide">
+								<div class="testimonialCard">
+									<div class="row align-items-center">
+										<div class="col-sm-auto">
+											<div class="tImgCol">
+												{% if t.thumbnail %}
+													<img src="{{ t.thumbnail.url }}" alt="{{ t.name }}">
+												{% else %}
+													<img src="{% static 'css/images/icon1.jpg' %}" alt="{{ t.name }}">
+												{% endif %}
+											</div>
+										</div>
+										<div class="col-sm">
+											<div class="tContentCol">
+												<h4 class="xsTitle bold">{{ t.name }}</h4>
+												<p>{{ t.quote }}</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							{% empty %}
+							<div class="swiper-slide"><div class="testimonialCard">{% trans "No testimonials yet." %}</div></div>
+							{% endfor %}
+						</div>
+						<div class="test-swiper-button-next swiper-button-next swiperBtnStyle"></div>
+						<div class="test-swiper-button-prev swiper-button-prev swiperBtnStyle"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+{% endblock %}
+
+{% block extend_footer %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	if (typeof Swiper !== 'undefined') {
+		try {
+			new Swiper('.certificatesSlider', {
+				slidesPerView: 1,
+				spaceBetween: 20,
+				navigation: {
+					nextEl: '.cert-swiper-button-next',
+					prevEl: '.cert-swiper-button-prev',
+				},
+				pagination: {
+					el: '.swiper-pagination',
+					clickable: true,
+				},
+				breakpoints: {
+					768: { slidesPerView: 2 },
+					992: { slidesPerView: 3 }
+				}
+			});
+
+			new Swiper('.testimonialSwiper', {
+				slidesPerView: 1,
+				loop: true,
+				navigation: {
+					nextEl: '.test-swiper-button-next',
+					prevEl: '.test-swiper-button-prev'
+				}
+			});
+		} catch (e) {
+			console.warn('Swiper init failed', e);
+		}
+	}
+});
+</script>
+{% endblock %}
