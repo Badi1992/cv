@@ -14,15 +14,36 @@
 			<div class="row align-items-center">
 				<div class="col-md-4">
 					<div class="bannerUserImg">
-						<img src="{{me.userprofile.avatar.url}}" alt="avatar" class="img-fluid">
+						{% if me.userprofile.avatar %}
+							<img src="{{me.userprofile.avatar.url}}" alt="avatar" class="img-fluid">
+						{% else %}
+							<img src="{% static 'css/images/icon.jpg' %}" alt="avatar" class="img-fluid">
+						{% endif %}
 					</div>
 				</div>
 				<div class="col-md-8">
 					<div class="bannerContent">
-						<h1 class="xlTitle">Hi, I’m {{me.first_name|title}},— a {{me.userprofile.title}}</h1>
-						<p>{{me.userprofile.bio}}</p>
+						<h1 class="title">
+							{% with first_name=me.first_name %}
+								{% if first_name and first_name != 'None' %}
+									Hi, I’m {{ first_name|title }},
+								{% else %}
+									Hi,
+								{% endif %}
+							{% endwith %}
+							{% with profile_title=me.userprofile.title %}
+								{% if profile_title and profile_title != 'None' %}
+									{{ profile_title }}
+								{% else %}
+									a Backend Developer
+								{% endif %}
+							{% endwith %}
+						</h1>
+						<p>{{ me.userprofile.bio|default:"" }}</p>
 						<p>
-							<a download href="{{me.userprofile.cv.url}}" class="btn btnPrimary" download>{% trans "Download Resume" %}</a>
+							{% if me.userprofile.cv %}
+								<a href="{{me.userprofile.cv.url}}" class="btn btnPrimary" download>{% trans "Download Resume" %}</a>
+							{% endif %}
 							<a href="{% url 'main:contact' %}" class="btn btnOutline">{% trans "Contact" %}</a>
 						</p>
 					</div>
